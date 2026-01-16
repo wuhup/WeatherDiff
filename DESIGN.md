@@ -80,7 +80,15 @@ The rounded terminals feel friendlier and less "data-heavy" than standard SF Pro
 | Large Delta Value + Arrow (e.g., ↓ 4°) | Line 1: "Colder" |
 | | Line 2: "Rain soon" OR "18°C" |
 
-**Logic:** The Precipitation warning overrides the Absolute temp in Line 2 if rain probability > 30%.
+**Rain Logic (Smart Threshold):**
+
+| Probability | Display | Rationale |
+|-------------|---------|-----------|
+| < 30% | Nothing | Noise reduction |
+| 30% – 50% | Icon only | Awareness |
+| > 50% | Icon + text warning | Action required |
+
+No user configuration — adding a threshold setting creates cognitive friction that contradicts simplicity.
 
 ### 3. Home Screen Widget (Small)
 
@@ -105,28 +113,75 @@ The rounded terminals feel friendlier and less "data-heavy" than standard SF Pro
 
 ### 5. App Main Screen
 
-**Header:** Standard iOS navigation bar (Settings gear icon on right).
+**Layout: Stacked (No Toggle)**
 
-**Center Stage:**
+The toggle interaction conflicts with glanceability. Users want the full picture immediately.
+
+| Section | Height | Content |
+|---------|--------|---------|
+| Primary Hero | ~60% | "Current Moment" Delta (e.g., "5° Warmer right now") |
+| Secondary Block | ~30% | "Day Forecast" Delta (e.g., "Highs will be similar today") |
+| Footer | ~10% | Settings access + absolute temperature data |
+
+**Visual Treatment:**
 - Background: Subtle vertical gradient (Orange→White for warmer, Blue→White for colder)
-- Massive central number: `5°`
-- Below number: "Warmer than this time yesterday."
+- Primary hero: Massive central number with state label
+- Secondary block: Smaller, clearly subordinate typography
 
-**Footer Area ("The Outfit Check"):**
-- Horizontal pill-shaped container
-- Left icon: umbrella (if needed)
-- Right text: "Absolute High: 22°C"
+**Why stacked wins:** Satisfies both "What do I wear now?" and "Will I regret this outfit later?" without requiring interaction.
 
-**Interaction:** Tap the main number to toggle between "Current Delta" and "Daily High Delta."
+### 6. Push Notification Design
 
-### 6. First Launch / Onboarding Flow
+#### A. Short Look (Banner)
 
-| Screen | Content |
-|--------|---------|
-| 1 | "Stop doing the math." (Graphic: confused person looking at 18°C vs 22°C) |
-| 2 | "Know how it feels." (Graphic: +5° Warmer = T-shirt) |
-| 3 | "Where are you?" (Location Permission system dialog) |
-| 4 | "Morning briefing." (Time picker for notification) |
+Text-only, must convey delta instantly.
+
+| Element | Content |
+|---------|---------|
+| **Title** | ↑ 5° Warmer than yesterday |
+| **Body** | Rain likely around 5 PM. High of 18°C. |
+
+Note: Use arrow glyph in title text for scanability.
+
+#### B. Long Look (Expanded)
+
+When user long-presses, load custom view mirroring Medium Widget layout.
+
+**Canvas:** Rectangular (approx. height of 2 widgets)
+
+**Layout:**
+
+| Left Column | Right Column |
+|-------------|--------------|
+| Massive Delta Number + Arrow | Row 1: "Today's High: +2° vs yesterday" |
+| Background: Warm/Cold state color | Row 2: "Rain: 60% chance" |
+
+**Action Button:** "Open WeatherDiff"
+
+**Technical Constraints:**
+- Cache latest data in shared App Group (no spinner while fetching)
+- Ensure Orange/Blue backgrounds have sufficient contrast for white text in translucent notification shade
+- Test in both Light and Dark mode notification centers
+
+---
+
+### 7. First Launch / Onboarding Flow
+
+**Visual Strategy: SF Symbols Compositions**
+
+Custom illustrations feel "marketing-heavy" for a native iOS utility. Instead, compose SF Symbols into scenes using SwiftUI — scales perfectly, supports Dark Mode, matches system aesthetic.
+
+| Screen | Copy | SF Symbols Composition |
+|--------|------|------------------------|
+| 1 | "Stop doing the math." | `person.fill` + `questionmark.circle` above head, beside `thermometer.sun` and `thermometer.snowflake` |
+| 2 | "Know how it feels." | `tshirt.fill` next to large bold `arrow.up` |
+| 3 | "Where are you?" | `map.fill` with `location.fill` overlay (Location Permission dialog) |
+| 4 | "Morning briefing." | `bell.badge.fill` with `clock.fill` (Time picker for notification) |
+
+**Why SF Symbols win:**
+- Lightweight (no assets to download)
+- Fully accessible (respects Dynamic Type)
+- Feels distinctly "Apple"
 
 ---
 
