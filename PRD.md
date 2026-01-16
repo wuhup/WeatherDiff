@@ -24,56 +24,58 @@ People who:
 
 ---
 
-## MVP Scope
+## MVP Scope (Radically Simplified)
 
 ### Philosophy: Widget-First, Minimal App
 
-The **widget IS the product**. The app exists primarily for:
+The **widget IS the product**. The app exists only for:
 - Granting location permissions
-- Configuring notification times
-- Displaying the same info as the widget (for consistency)
+- Configuring notification time
+- Instructions to add widget
 
 ### Information Hierarchy (Critical)
 
-All surfaces (widget, app, notification) follow this priority:
-
 | Priority | Information | Example | User Need |
 |----------|-------------|---------|-----------|
-| **1st** | Temperature difference | "+7° warmer" / "-5° colder" / "Same as yesterday" | Core decision: dress warmer or cooler? |
-| **2nd** | Precipitation indicator | Rain expected / No rain | Secondary decision: bring umbrella? |
-| **3rd** | Absolute temperature | "Currently 22°C" | Context for those who want it |
-| **4th** | Additional details | Wind, humidity | Deep-dive info (app only) |
+| **1st** | Temperature difference | "↑ 5° warmer" / "↓ 3° colder" / "Same as yesterday" | Core decision: dress warmer or cooler? |
+| **2nd** | Precipitation indicator | Rain icon if >30%, icon+text if >50% | Secondary decision: bring umbrella? |
+| **3rd** | Absolute temperature | "18°C" | Context for those who want it |
 
-### Comparison Types
+### Comparison Type (MVP)
 
-Both comparisons shown:
-1. **Right now vs. yesterday same time** — "Right now it's 5° warmer than yesterday at this time"
-2. **Today's high/low vs. yesterday's** — "Today's high will be 3° cooler than yesterday"
+**Single comparison only:**
+- **Right now vs. yesterday same time** — "5° warmer than this time yesterday"
+
+Daily high/low comparison: **deleted from MVP** (add post-validation if users request it)
 
 ---
 
 ## Features (MVP)
 
-### 1. Lock Screen Widget
-- **Sizes:** Small (circular) and medium (rectangular)
-- **Content:** Temperature difference, precipitation indicator (medium only)
+### 1. Home Screen Widget (Single Size)
+- **Size:** Medium (most information density)
+- **Content:** Temperature difference + precipitation indicator + absolute temp
 - **Tap action:** Opens app
 
-### 2. Home Screen Widget
-- **Sizes:** Small, Medium
-- **Content:** Temperature difference (both sizes), precipitation indicator + absolute temp (medium)
-
-### 3. App (Minimal)
-- **Main screen:** Same info as medium widget, slightly expanded
+### 2. App (Permissions + Settings Only)
+- **Main screen:**
+  - Current weather diff (same as widget)
+  - "Add Widget" instructions with visual guide
 - **Settings:**
-  - Notification time picker (e.g., 7:00 AM daily)
+  - Notification time picker
   - Temperature unit toggle (°C / °F)
   - About/credits
 
-### 4. Push Notifications
-- **User-scheduled** (e.g., every morning at 7 AM)
-- **Content:** "Today is 6° warmer than yesterday. No rain expected."
-- **Rich notification:** Shows the same visual as the widget
+### 3. Daily Notification (Single)
+- **User-scheduled** (e.g., 7:00 AM)
+- **Content:** "↑ 5° warmer than yesterday. Rain likely."
+- **No rich notification in MVP** — text only
+
+### Deleted from MVP
+- Lock screen widgets (add later)
+- Multiple widget sizes (add later)
+- Daily high/low comparison (validate need first)
+- Rich notifications (text is sufficient for validation)
 
 ---
 
@@ -102,13 +104,18 @@ Both comparisons shown:
 
 ### Weather Data
 - **API:** Open-Meteo (free, open source, no API key required)
-- **Data needed:**
-  - Current feels-like temperature (apparent_temperature)
-  - Yesterday's feels-like temperature (same hour)
-  - Today's forecast high/low (feels-like)
-  - Yesterday's actual high/low (feels-like)
-  - Precipitation probability
+- **Endpoint:** `/v1/forecast` with `past_days=1`
+- **Verified data availability:**
+  - `apparent_temperature` — hourly feels-like (confirmed)
+  - `precipitation_probability` — hourly rain % (confirmed)
+  - `past_days=1` — returns yesterday's hourly data in same response (confirmed)
+  - `timezone=auto` — returns local time based on coordinates (confirmed)
 - **Note:** All comparisons use feels-like temperature, not actual temperature
+
+**Example API call:**
+```
+https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&hourly=apparent_temperature,precipitation_probability&past_days=1&timezone=auto&forecast_days=1
+```
 
 ### Location
 - Current location only (no saved locations in MVP)
@@ -265,6 +272,11 @@ WeatherDiff is an iOS weather app with a unique value proposition: it shows temp
 1. **Zero difference display** — Show "Same as yesterday" (friendly text, no number)
 2. **Temperature basis** — Use **feels-like temperature** for all comparisons (more relevant for "what to wear" decisions)
 3. **Night mode** — Deferred to design phase
+4. **First-day problem** — On first launch (no yesterday data), show absolute temp with message: "Check back tomorrow for comparison"
+5. **Rain threshold** — Smart fixed logic (no user setting):
+   - <30%: Don't show
+   - 30-50%: Icon only
+   - >50%: Icon + text warning
 
 ---
 
@@ -288,14 +300,34 @@ WeatherDiff is an iOS weather app with a unique value proposition: it shows temp
 
 ---
 
+## Validation (Pre-Build)
+
+### iOS Shortcut POC
+Before building the app, validate the core hypothesis with an iOS Shortcut:
+
+**Location:** `poc/SHORTCUT_INSTRUCTIONS.md`
+
+**Validation questions after 1 week:**
+1. Did relative temperature help you decide what to wear?
+2. Did you ever need to check absolute temperature anyway?
+3. Was the rain threshold (30%/50%) appropriate?
+4. What time was most useful for the notification?
+5. Would you pay $2 for an app version with a widget?
+
+**Go/No-Go criteria:**
+- If answers to #1 and #5 are "Yes" → Build the app
+- If answer to #2 is consistently "Yes" → Reconsider information hierarchy
+
+---
+
 ## Timeline Estimate
 
 | Phase | Scope |
 |-------|-------|
-| **Week 1** | Core data layer + basic app UI |
-| **Week 2** | Widgets (lock screen + home screen) |
-| **Week 3** | Notifications + polish |
-| **Week 4** | TestFlight beta + iteration |
+| **Week 0** | Shortcut POC validation (1 week of daily use) |
+| **Week 1** | Core data layer + app UI (permissions, settings, instructions) |
+| **Week 2** | Home screen widget (medium) + notification |
+| **Week 3** | Polish + TestFlight beta |
 
 ---
 
