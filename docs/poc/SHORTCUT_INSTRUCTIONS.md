@@ -1,5 +1,7 @@
 # WeatherDiff iOS Shortcut POC
 
+📲 **[Install Shortcut](https://www.icloud.com/shortcuts/4e00a6701187492ab96e49cb3fb35c39)** — or build it yourself using the instructions below.
+
 > **WeatherDiff** is an iOS Shortcut that tells you how today's weather compares to yesterday — showing temperature differences like "+5° warmer" instead of abstract absolute values like "18°C." The insight is simple: when you know it's colder than yesterday, you instantly remember what you wore and adjust accordingly, without doing mental math. The shortcut fetches feels-like temperature and rain probability from the free Open-Meteo API, compares the current hour to the same time yesterday, and sends a morning notification with the difference plus a rain warning if needed.
 
 ## Purpose
