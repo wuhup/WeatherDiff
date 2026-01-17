@@ -2,26 +2,61 @@
 
 📲 **[Install iOS Shortcut](https://www.icloud.com/shortcuts/4e00a6701187492ab96e49cb3fb35c39)**
 
-**WeatherDiff** is an iOS Shortcut (and future app) that tells you how today's weather compares to yesterday — showing temperature differences like "+5° warmer" instead of abstract absolute values like "18°C." The insight is simple: when you know it's colder than yesterday, you instantly remember what you wore and adjust accordingly, without doing mental math. The shortcut fetches feels-like temperature and rain probability from the free Open-Meteo API, compares the current hour to the same time yesterday, and sends a morning notification with the difference plus a rain warning if needed. This serves as a proof-of-concept to validate the core hypothesis before building a full iOS app with widgets.
+Know if today is warmer or colder than yesterday — at a glance.
+
+---
+
+## The Problem
+
+When you check the weather and see "18°C", your brain has to work:
+- *What does that actually mean?*
+- *Is that warm? Cold?*
+- *What should I wear?*
+
+## The Solution
+
+**WeatherDiff** shows temperature as a *difference* from yesterday:
+
+```
++5° warmer than yesterday
+High: -3° colder
+☔ Rain likely (65%)
+```
+
+When you know it's colder than yesterday, you instantly remember what you wore and adjust accordingly. No mental math required.
+
+## How It Works
+
+1. Fetches feels-like temperature from [Open-Meteo](https://open-meteo.com) (free, no API key)
+2. Compares current hour to the same time yesterday
+3. Shows the difference with rain probability
+
+## Setup
+
+1. **[Install the Shortcut](https://www.icloud.com/shortcuts/4e00a6701187492ab96e49cb3fb35c39)**
+2. Run it manually, or set up a morning automation:
+   - Shortcuts → Automations → Time of Day → 7:00 AM
+   - Run Shortcut → WeatherDiff
+   - Toggle OFF "Ask Before Running"
 
 ## Status
 
-🧪 **POC Phase** — Validating the concept with an iOS Shortcut before building the app.
+🧪 **POC Phase** — Validating the concept before building an iOS app with widgets.
+
+## Background
+
+Google's weather app used to have this feature — showing "5° colder than yesterday" — but quietly removed it years ago. No current weather app focuses on relative temperature. WeatherDiff fills that gap.
 
 ## Documentation
 
-- [Product Requirements Document](docs/PRD.md)
+- [Product Requirements](docs/PRD.md)
 - [Design Specification](docs/DESIGN.md)
-- [Shortcut Instructions](docs/poc/SHORTCUT_INSTRUCTIONS.md)
-
-## Core Idea
-
-Google's weather app used to show "5° colder than yesterday" — a feature that was quietly removed years ago. For many people, this relative comparison is far more actionable than absolute temperatures:
-
-| Absolute | Relative |
-|----------|----------|
-| "It's 18°C" → *What does that mean? What should I wear?* | "+5° warmer than yesterday" → *I was fine yesterday, I can wear less today* |
+- [Build Your Own Shortcut](docs/poc/SHORTCUT_INSTRUCTIONS.md)
 
 ## License
 
 MIT — Free and open source.
+
+---
+
+*Weather data provided by [Open-Meteo](https://open-meteo.com)*
